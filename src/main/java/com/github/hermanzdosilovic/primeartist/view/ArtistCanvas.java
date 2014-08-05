@@ -20,8 +20,8 @@ public class ArtistCanvas extends JComponent {
     private static final int preferedHeight = 500;
     private static final Dimension preferedSize = new Dimension(preferedWidth, preferedHeight);
 
-    private static int widthThickness = 20;
-    private static int heightThickness = 20;
+    private static int widthThickness = 1;
+    private static int heightThickness = 1;
 
     public ArtistCanvas() {
         setPreferredSize(preferedSize);
@@ -58,6 +58,7 @@ public class ArtistCanvas extends JComponent {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
         Insets insets = getInsets();
         int width = getSize().width - insets.right - insets.left;
         int height = getSize().height - insets.bottom - insets.top;
@@ -74,7 +75,6 @@ public class ArtistCanvas extends JComponent {
                 }
             }
         }
-
     }
 
     public static int getWidthThickness() {

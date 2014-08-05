@@ -75,6 +75,7 @@ public final class PrimeArtist extends JFrame {
             public void run() {
                 new PrimeArtist("Prime Artist");
             }
+
         });
     }
 
