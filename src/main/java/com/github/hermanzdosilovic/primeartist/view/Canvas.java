@@ -40,8 +40,8 @@ public class Canvas extends JComponent {
             public void componentResized(ComponentEvent e) {
                 Canvas canvas = (Canvas) e.getComponent();
                 Artifact artifact = Artifact.getArtifact();
-                int width = (canvas.getCanvasWidth() / artifact.getWidth()) * artifact.getWidth();
-                int height = (canvas.getCanvasHeight() / artifact.getHeight()) * artifact.getHeight();
+                int width = canvas.getCanvasWidth() / artifact.getWidth() * artifact.getWidth();
+                int height = canvas.getCanvasHeight() / artifact.getHeight() * artifact.getHeight();
                 canvas.setCanvasSize(width, height);
             }
 
@@ -59,7 +59,9 @@ public class Canvas extends JComponent {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        
         Artist artistDrawer = new Artist(0, 0, getCanvasWidth(), getCanvasHeight());
+        BufferedImage image = artistDrawer.getImage();
         artistDrawer.start();
         try {
             while (artistDrawer.isAlive()) {
@@ -68,8 +70,7 @@ public class Canvas extends JComponent {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        BufferedImage image = artistDrawer.getImage();
-        g.drawImage(image, getInsets().left, getInsets().right, null);
+        g.drawImage(image, getInsets().left, getInsets().top, null);
     }
 
     public static Canvas getCanvas() {
@@ -88,8 +89,16 @@ public class Canvas extends JComponent {
         return getWidth() - getInsets().right - getInsets().left;
     }
 
+    public void setCanvasWidth(int width) {
+        setSize(width + getInsets().right + getInsets().left, getHeight());
+    }
+
     public int getCanvasHeight() {
         return getHeight() - getInsets().top - getInsets().bottom;
+    }
+
+    public void setCanvasHeight(int height) {
+        setSize(getWidth(), height + getInsets().top + getInsets().bottom);
     }
 
     public void setCanvasSize(int width, int height) {

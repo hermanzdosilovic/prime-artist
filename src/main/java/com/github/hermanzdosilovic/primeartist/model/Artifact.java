@@ -13,7 +13,7 @@ public class Artifact {
     private static final int maxWidth = 30;
     private static final int maxHeight = 30;
 
-    private Color color = Color.ORANGE;
+    private Color color = Color.MAGENTA;
 
     private static Artifact artifact = new Artifact();
 
