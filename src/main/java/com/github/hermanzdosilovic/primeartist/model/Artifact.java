@@ -4,20 +4,22 @@ import java.awt.Color;
 
 public class Artifact {
 
-    private static final int minWidth = 1;
-    private static final int minHeight = 1;
-
-    private int width = 1;
-    private int height = 1;
-
-    private static final int maxWidth = 30;
-    private static final int maxHeight = 30;
+    private final int minWidth = 1;
+    private final int minHeight = 1;
+    private int width;
+    private int height;
+    private final int maxWidth = 30;
+    private final int maxHeight = 30;
 
     private Color color = Color.MAGENTA;
 
-    private static Artifact artifact = new Artifact();
+    public Artifact() {
+        this(1, 1);
+    }
 
-    private Artifact() {
+    public Artifact(int width, int height) {
+        setWidth(width);
+        setHeight(height);
     }
 
     public int getWidth() {
@@ -25,6 +27,9 @@ public class Artifact {
     }
 
     public void setWidth(int width) {
+        if (width < minWidth || width > maxWidth) {
+            throw new IllegalArgumentException("Width must be >= " + minWidth + " and <= " + maxWidth);
+        }
         this.width = width;
     }
 
@@ -33,6 +38,9 @@ public class Artifact {
     }
 
     public void setHeight(int height) {
+        if (height < minHeight || height > maxHeight) {
+            throw new IllegalArgumentException("Width must be >= " + minHeight + " and <= " + maxHeight);
+        }
         this.height = height;
     }
 
@@ -49,24 +57,20 @@ public class Artifact {
         this.color = color;
     }
 
-    public static int getMinwidth() {
+    public int getMinWidth() {
         return minWidth;
     }
 
-    public static int getMinheight() {
+    public int getMinHeight() {
         return minHeight;
     }
 
-    public static int getMaxwidth() {
+    public int getMaxWidth() {
         return maxWidth;
     }
 
-    public static int getMaxheight() {
+    public int getMaxHeight() {
         return maxHeight;
-    }
-
-    public static Artifact getArtifact() {
-        return artifact;
     }
 
 }

@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import org.apache.commons.math3.primes.Primes;
 
 import com.github.hermanzdosilovic.primeartist.model.Artifact;
-import com.github.hermanzdosilovic.primeartist.view.Canvas;
+import com.github.hermanzdosilovic.primeartist.view.CanvasView;
 
 public class Artist extends Thread {
 
@@ -20,17 +20,20 @@ public class Artist extends Thread {
     private int endX;
     private int endY;
 
-    public Artist(int startX, int startY, int endX, int endY) {
+    private CanvasView canvasView;
+    
+    public Artist(int startX, int startY, int endX, int endY, CanvasView canvasView) {
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;
         this.endY = endY;
+        this.canvasView = canvasView;
         image = new BufferedImage(endX - startX, endY - startY, BufferedImage.TYPE_INT_ARGB);
     }
 
     @Override
     public void run() {
-        Artifact artifact = Artifact.getArtifact();
+        Artifact artifact = canvasView.getArtifact();
         int componentsInWidth = (endX - startX) / artifact.getWidth();
         int componentsInHeight = (endY - startY) / artifact.getHeight();
 
@@ -38,9 +41,9 @@ public class Artist extends Thread {
 
             int leftHalf = componentsInWidth / 2;
 
-            Artist leftCanvas = new Artist(startX, startY, startX + leftHalf * artifact.getWidth(), endY);
+            Artist leftCanvas = new Artist(startX, startY, startX + leftHalf * artifact.getWidth(), endY, canvasView);
 
-            Artist rightCanvas = new Artist(startX + leftHalf * artifact.getWidth(), startY, endX, endY);
+            Artist rightCanvas = new Artist(startX + leftHalf * artifact.getWidth(), startY, endX, endY, canvasView);
 
             leftCanvas.start();
             rightCanvas.start();
@@ -72,9 +75,9 @@ public class Artist extends Thread {
 
             int upperHalf = componentsInHeight / 2;
 
-            Artist upperCanvas = new Artist(startX, startY, endX, startY + upperHalf * artifact.getHeight());
+            Artist upperCanvas = new Artist(startX, startY, endX, startY + upperHalf * artifact.getHeight(), canvasView);
 
-            Artist lowerCanvas = new Artist(startX, startY + upperHalf * artifact.getHeight(), endX, endY);
+            Artist lowerCanvas = new Artist(startX, startY + upperHalf * artifact.getHeight(), endX, endY, canvasView);
 
             upperCanvas.start();
             lowerCanvas.start();
@@ -103,10 +106,10 @@ public class Artist extends Thread {
             return;
         }
 
-        int width = Canvas.getCanvas().getCanvasWidth();
+        int width = canvasView.getWidthNoInsets();
 
         Graphics2D g = image.createGraphics();
-        g.setBackground(Canvas.getCanvas().getColor());
+        g.setBackground(canvasView.getCanvas().getColor());
         g.clearRect(0, 0, image.getWidth(), image.getHeight());
 
         for (int y = startY, rY = 0; y < endY; y += artifact.getHeight(), rY += artifact.getHeight()) {
