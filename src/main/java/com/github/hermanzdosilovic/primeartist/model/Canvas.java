@@ -2,8 +2,16 @@ package com.github.hermanzdosilovic.primeartist.model;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Observable;
 
-public class Canvas {
+import com.github.hermanzdosilovic.primeartist.view.CanvasView;
+import com.github.hermanzdosilovic.primeartist.view.ColorView;
+
+public class Canvas extends Observable implements ComponentListener, PropertyChangeListener {
 
     private int width;
     private int height;
@@ -40,6 +48,7 @@ public class Canvas {
             throw new IllegalArgumentException("Color cannot be null");
         }
         this.color = color;
+        notifyObservers();
     }
 
     public int getWidth() {
@@ -111,6 +120,31 @@ public class Canvas {
         setWidth(width);
         setHeight(height);
         this.size = new Dimension(width, height);
+    }
+    
+    @Override
+    public void componentResized(ComponentEvent e) {
+        CanvasView canvasView = (CanvasView) e.getSource();
+        setSize(canvasView.getSizeNoInsets());
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        ColorView colorView = (ColorView) evt.getSource();
+        setChanged();
+        setColor(colorView.getColor());
     }
 
 }

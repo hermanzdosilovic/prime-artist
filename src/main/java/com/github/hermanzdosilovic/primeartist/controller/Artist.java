@@ -2,15 +2,17 @@ package com.github.hermanzdosilovic.primeartist.controller;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.RecursiveAction;
 
 import org.apache.commons.math3.primes.Primes;
 
-import com.github.hermanzdosilovic.primeartist.model.Artifact;
 import com.github.hermanzdosilovic.primeartist.view.CanvasView;
 
-public class Artist extends Thread {
+public class Artist extends RecursiveAction {
 
-    private static int THRESHOLDWIDTH = 240;
+    private static final long serialVersionUID = 1L;
+
+    private static int THRESHOLDWIDTH = 320;
     private static int THRESHOLDHEIGHT = 320;
 
     private BufferedImage image;
@@ -21,7 +23,7 @@ public class Artist extends Thread {
     private int endY;
 
     private CanvasView canvasView;
-    
+
     public Artist(int startX, int startY, int endX, int endY, CanvasView canvasView) {
         this.startX = startX;
         this.startY = startY;
@@ -31,100 +33,57 @@ public class Artist extends Thread {
         image = new BufferedImage(endX - startX, endY - startY, BufferedImage.TYPE_INT_ARGB);
     }
 
+    public BufferedImage getImage() {
+        return image;
+    }
+
     @Override
-    public void run() {
-        Artifact artifact = canvasView.getArtifact();
-        int componentsInWidth = (endX - startX) / artifact.getWidth();
-        int componentsInHeight = (endY - startY) / artifact.getHeight();
+    protected void compute() {
+        int componentsInWidth = (endX - startX) / canvasView.getArtifactWidth();
+        int componentsInHeight = (endY - startY) / canvasView.getArtifactHeight();
 
-        if (componentsInWidth >= THRESHOLDWIDTH / artifact.getWidth()) {
-
+        if (componentsInWidth >= THRESHOLDWIDTH / canvasView.getArtifactWidth()) {
             int leftHalf = componentsInWidth / 2;
-
-            Artist leftCanvas = new Artist(startX, startY, startX + leftHalf * artifact.getWidth(), endY, canvasView);
-
-            Artist rightCanvas = new Artist(startX + leftHalf * artifact.getWidth(), startY, endX, endY, canvasView);
-
-            leftCanvas.start();
-            rightCanvas.start();
-
-            try {
-                while (leftCanvas.isAlive()) {
-                    rightCanvas.join();
-                    leftCanvas.join();
-                }
-                while (rightCanvas.isAlive()) {
-                    rightCanvas.join();
-                    leftCanvas.join();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            Graphics2D imageGraphics = image.createGraphics();
-
-            BufferedImage leftImage = leftCanvas.getImage();
-            BufferedImage rightImage = rightCanvas.getImage();
-
-            imageGraphics.drawImage(leftImage, 0, 0, null);
-            imageGraphics.drawImage(rightImage, leftImage.getWidth(), 0, null);
-
+            Artist leftCanvas = new Artist(startX, startY, startX + leftHalf * canvasView.getArtifactWidth(), endY, canvasView);
+            Artist rightCanvas = new Artist(startX + leftHalf * canvasView.getArtifactWidth(), startY, endX, endY, canvasView);
+            combine(leftCanvas, rightCanvas, 0, 0, leftCanvas.getImage().getWidth(), 0);
             return;
         }
-        if (componentsInHeight >= THRESHOLDHEIGHT / artifact.getHeight()) {
-
+        if (componentsInHeight >= THRESHOLDHEIGHT / canvasView.getArtifactHeight()) {
             int upperHalf = componentsInHeight / 2;
-
-            Artist upperCanvas = new Artist(startX, startY, endX, startY + upperHalf * artifact.getHeight(), canvasView);
-
-            Artist lowerCanvas = new Artist(startX, startY + upperHalf * artifact.getHeight(), endX, endY, canvasView);
-
-            upperCanvas.start();
-            lowerCanvas.start();
-
-            try {
-                while (upperCanvas.isAlive()) {
-                    upperCanvas.join();
-                    lowerCanvas.join();
-                }
-                while (lowerCanvas.isAlive()) {
-                    upperCanvas.join();
-                    lowerCanvas.join();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            Graphics2D imageGraphics = image.createGraphics();
-
-            BufferedImage upperImage = upperCanvas.getImage();
-            BufferedImage lowerImage = lowerCanvas.getImage();
-
-            imageGraphics.drawImage(upperImage, 0, 0, null);
-            imageGraphics.drawImage(lowerImage, 0, upperImage.getHeight(), null);
-
+            Artist upperCanvas = new Artist(startX, startY, endX, startY + upperHalf * canvasView.getArtifactHeight(), canvasView);
+            Artist lowerCanvas = new Artist(startX, startY + upperHalf * canvasView.getArtifactHeight(), endX, endY, canvasView);
+            combine(upperCanvas, lowerCanvas, 0, 0, 0, upperCanvas.getImage().getHeight());
             return;
         }
 
         int width = canvasView.getWidthNoInsets();
 
         Graphics2D g = image.createGraphics();
-        g.setBackground(canvasView.getCanvas().getColor());
+        g.setBackground(canvasView.getCanvasColor());
         g.clearRect(0, 0, image.getWidth(), image.getHeight());
-
-        for (int y = startY, rY = 0; y < endY; y += artifact.getHeight(), rY += artifact.getHeight()) {
-            for (int x = startX, rX = 0; x < endX; x += artifact.getWidth(), rX += artifact.getWidth()) {
-                int number = (y * width) / (artifact.getHeight() * artifact.getHeight()) + x / artifact.getWidth();
+        
+        for (int y = startY, rY = 0; y < endY; y += canvasView.getArtifactHeight(), rY += canvasView.getArtifactHeight()) {
+            for (int x = startX, rX = 0; x < endX; x += canvasView.getArtifactWidth(), rX += canvasView.getArtifactWidth()) {
+                int number = (y * width) / (canvasView.getArtifactHeight() * canvasView.getArtifactHeight()) + x / canvasView.getArtifactWidth();
                 if (Primes.isPrime(number)) {
-                    g.setColor(artifact.getColor());
-                    g.fillRect(rX, rY, artifact.getWidth(), artifact.getHeight());
+                    g.setColor(canvasView.getArtifactColor());
+                    g.fillRect(rX, rY, canvasView.getArtifactWidth(), canvasView.getArtifactHeight());
                 }
             }
         }
+
     }
 
-    public BufferedImage getImage() {
-        return image;
+    private void combine(Artist firstCanvas, Artist secondCanvas, int firstX, int firstY, int secondX, int secondY) {
+        invokeAll(firstCanvas, secondCanvas);
+
+        Graphics2D imageGraphics = image.createGraphics();
+        BufferedImage firstImage = firstCanvas.getImage();
+        BufferedImage secondImage = secondCanvas.getImage();
+
+        imageGraphics.drawImage(firstImage, firstX, firstY, null);
+        imageGraphics.drawImage(secondImage, secondX, secondY, null);
     }
 
 }

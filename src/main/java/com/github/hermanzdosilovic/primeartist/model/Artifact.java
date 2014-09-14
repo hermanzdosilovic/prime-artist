@@ -1,18 +1,27 @@
 package com.github.hermanzdosilovic.primeartist.model;
 
 import java.awt.Color;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Observable;
 
-public class Artifact {
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import com.github.hermanzdosilovic.primeartist.view.ColorView;
+
+public class Artifact extends Observable implements PropertyChangeListener {
 
     private final int minWidth = 1;
     private final int minHeight = 1;
     private int width;
     private int height;
-    private final int maxWidth = 30;
-    private final int maxHeight = 30;
+    private final int maxWidth = 31;
+    private final int maxHeight = 31;
 
     private Color color = Color.MAGENTA;
-
+    
     public Artifact() {
         this(1, 1);
     }
@@ -31,6 +40,7 @@ public class Artifact {
             throw new IllegalArgumentException("Width must be >= " + minWidth + " and <= " + maxWidth);
         }
         this.width = width;
+        notifyObservers();
     }
 
     public int getHeight() {
@@ -42,6 +52,7 @@ public class Artifact {
             throw new IllegalArgumentException("Width must be >= " + minHeight + " and <= " + maxHeight);
         }
         this.height = height;
+        notifyObservers();
     }
 
     public void setSize(int width, int height) {
@@ -54,7 +65,11 @@ public class Artifact {
     }
 
     public void setColor(Color color) {
+        if(color == null) {
+            throw new IllegalArgumentException("Color cannot be null");
+        }
         this.color = color;
+        notifyObservers();
     }
 
     public int getMinWidth() {
@@ -71,6 +86,35 @@ public class Artifact {
 
     public int getMaxHeight() {
         return maxHeight;
+    }
+    
+    public class WidthListener implements ChangeListener {
+
+        @Override
+        public void stateChanged(ChangeEvent e) {
+            JSlider jSlider = (JSlider) e.getSource();
+            int value = jSlider.getValue();
+            setChanged();
+            setWidth(value);            
+        }
+    }
+    
+    public class HeightListener implements ChangeListener {
+
+        @Override
+        public void stateChanged(ChangeEvent e) {
+            JSlider jSlider = (JSlider) e.getSource();
+            int value = jSlider.getValue();
+            setChanged();
+            setHeight(value);
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        ColorView colorView = (ColorView) evt.getSource();
+        setChanged();
+        setColor(colorView.getColor());
     }
 
 }
