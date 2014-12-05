@@ -26,6 +26,8 @@ public class CanvasView extends JComponent implements Observer {
     
     private boolean stateChanged;
     
+    private BufferedImage bufferedImage;
+    
     public CanvasView(Canvas canvas, Artifact artifact) {
         if(canvas == null) {
             throw new IllegalArgumentException("Canvas cannot be null");
@@ -59,8 +61,12 @@ public class CanvasView extends JComponent implements Observer {
         Artist artistDrawer = new Artist(0, 0, getWidthNoInsets(), getHeightNoInsets(), this);
         ForkJoinPool pool = new ForkJoinPool();
         pool.invoke(artistDrawer);       
-        BufferedImage image = artistDrawer.getImage();
-        g.drawImage(image, getInsets().left, getInsets().top, null);
+        bufferedImage = artistDrawer.getImage();
+        g.drawImage(bufferedImage, getInsets().left, getInsets().top, null);
+    }
+    
+    public BufferedImage getBufferedImage() {
+        return bufferedImage;
     }
     
     private Dimension calculateBestFitSize(int currentWidth, int currentHeight) {

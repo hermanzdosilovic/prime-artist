@@ -4,8 +4,17 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
@@ -24,7 +33,7 @@ public final class PrimeArtist extends JFrame {
     private static final int minimumHeight = 200;
     private static final Dimension minimumSize = new Dimension(minimumWidth, minimumHeight);
     
-    private CanvasView canvasView;
+    final private CanvasView canvasView;
     private Canvas canvas;
     private Artifact artifact;
     
@@ -57,10 +66,34 @@ public final class PrimeArtist extends JFrame {
     private JPanel createMenuAndToolBar() {
         JPanel panel = new JPanel(new BorderLayout());
         JToolBar toolBar = createToolBar();
+        JMenuBar menuBar = createMenuBar();
         panel.add(toolBar, BorderLayout.SOUTH);
+        panel.add(menuBar, BorderLayout.NORTH);
         return panel;
     }
-
+    
+    private JMenuBar createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu file = new JMenu("File");
+        JMenuItem save = new JMenuItem("Save");
+        save.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fc = new JFileChooser();
+                fc.showSaveDialog(null);
+                File outputFile = fc.getSelectedFile();
+                try {
+                    ImageIO.write(canvasView.getBufferedImage(), "png", outputFile);
+                } catch (IOException ignorable) {
+                }
+            }
+        });
+        file.add(save);
+        menuBar.add(file);
+        return menuBar;
+    }
+    
     private JToolBar createToolBar() {
         JPanel panel = new JPanel(new GridLayout(2, 2));
         JToolBar toolBar = new JToolBar();

@@ -23,7 +23,7 @@ public class Artifact extends Observable implements PropertyChangeListener {
     private Color color = Color.MAGENTA;
     
     public Artifact() {
-        this(1, 1);
+        this(1, 1); 
     }
 
     public Artifact(int width, int height) {

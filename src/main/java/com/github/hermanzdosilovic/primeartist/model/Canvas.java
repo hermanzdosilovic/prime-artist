@@ -23,7 +23,8 @@ public class Canvas extends Observable implements ComponentListener, PropertyCha
     private Color color = Color.BLACK;
 
     public Canvas() {
-        this(637, 637);
+//        this(637, 637);
+        this(851, 315);
     }
 
     public Canvas(int width, int height) {
