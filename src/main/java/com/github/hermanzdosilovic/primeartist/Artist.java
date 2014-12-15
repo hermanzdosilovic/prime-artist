@@ -1,12 +1,10 @@
-package com.github.hermanzdosilovic.primeartist.controller;
+package com.github.hermanzdosilovic.primeartist;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.RecursiveAction;
 
 import org.apache.commons.math3.primes.Primes;
-
-import com.github.hermanzdosilovic.primeartist.view.CanvasView;
 
 public class Artist extends RecursiveAction {
 
@@ -22,9 +20,9 @@ public class Artist extends RecursiveAction {
     private int endX;
     private int endY;
 
-    private CanvasView canvasView;
+    private Canvas canvasView;
 
-    public Artist(int startX, int startY, int endX, int endY, CanvasView canvasView) {
+    public Artist(int startX, int startY, int endX, int endY, Canvas canvasView) {
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;
@@ -57,7 +55,7 @@ public class Artist extends RecursiveAction {
             return;
         }
 
-        int width = canvasView.getWidthNoInsets();
+        int width = canvasView.getCanvasWidth();
 
         Graphics2D g = image.createGraphics();
         g.setBackground(canvasView.getCanvasColor());
@@ -69,6 +67,8 @@ public class Artist extends RecursiveAction {
                 if (Primes.isPrime(number)) {
                     g.setColor(canvasView.getArtifactColor());
                     g.fillRect(rX, rY, canvasView.getArtifactWidth(), canvasView.getArtifactHeight());
+                    g.setColor(canvasView.getCanvasColor());
+//                    g.drawString(Integer.toString(number), rX, rY + 29);
                 }
             }
         }
