@@ -1,5 +1,6 @@
 package com.github.hermanzdosilovic.primeartist;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.RecursiveAction;
@@ -64,11 +65,17 @@ public class Artist extends RecursiveAction {
         for (int y = startY, rY = 0; y < endY; y += canvasView.getArtifactHeight(), rY += canvasView.getArtifactHeight()) {
             for (int x = startX, rX = 0; x < endX; x += canvasView.getArtifactWidth(), rX += canvasView.getArtifactWidth()) {
                 int number = (y * width) / (canvasView.getArtifactHeight() * canvasView.getArtifactHeight()) + x / canvasView.getArtifactWidth();
+                number += canvasView.getStartNumber();
                 if (Primes.isPrime(number)) {
                     g.setColor(canvasView.getArtifactColor());
                     g.fillRect(rX, rY, canvasView.getArtifactWidth(), canvasView.getArtifactHeight());
                     g.setColor(canvasView.getCanvasColor());
-//                    g.drawString(Integer.toString(number), rX, rY + 29);
+                    if (canvasView.getArtifactWidth() == 30 &&
+                            canvasView.getArtifactHeight() == 30) {
+                        Color textColor = new Color(0xFFFFFF - canvasView.getCanvasColor().getRGB());
+                        g.setColor(textColor);
+                        g.drawString(Integer.toString(number), rX, rY + 29);
+                    }
                 }
             }
         }

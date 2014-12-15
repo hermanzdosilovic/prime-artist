@@ -34,13 +34,10 @@ public class Canvas extends JComponent implements ChangeListener {
 
     private BufferedImage bufferedImage;
     
-    private static final int minimumWidth = 480;
-    private static final int minimumHeight = 500;
-    private static final int maximumWidth = 3840;
-    private static final int maximumHeight = 2160;
+    private int startNumber;
     
     public Canvas() {
-        this(500, 500, 1, 1, Color.BLACK, Color.YELLOW); 
+        this(600, 300, 1, 1, Color.BLACK, Color.GREEN); 
     }
     
     public Canvas(int canvasWidth, int canvasHeight, int artifactWidth, int artifactHeight, Color canvasColor,
@@ -52,7 +49,7 @@ public class Canvas extends JComponent implements ChangeListener {
         setCanvasColor(canvasColor);
         setArtifactColor(artifactColor);
         
-        
+        startNumber = 0;
         
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(),
                 BorderFactory.createLoweredBevelBorder()));
@@ -71,8 +68,6 @@ public class Canvas extends JComponent implements ChangeListener {
         
         Dimension bestFit = calculateBestFitSize(getCanvasWidth(), getCanvasHeight());
         setSize(bestFit);
-        
-        System.out.println(getCanvasWidth() + " " + getCanvasHeight());
         
         Artist artistDrawer = new Artist(0, 0, getCanvasWidth(), getCanvasHeight(), this);
         ForkJoinPool pool = new ForkJoinPool();
@@ -126,20 +121,13 @@ public class Canvas extends JComponent implements ChangeListener {
         return bufferedImage;
     }
     
-    public static int getMinimumWidth() {
-        return minimumWidth;
+    
+    public int getStartNumber() {
+        return startNumber;
     }
 
-    public static int getMinimumHeight() {
-        return minimumHeight;
-    }
-
-    public static int getMaximumWidth() {
-        return maximumWidth;
-    }
-
-    public static int getMaximumHeight() {
-        return maximumHeight;
+    public void setStartNumber(int startNumber) {
+        this.startNumber = startNumber;
     }
 
     private Dimension calculateBestFitSize(int currentWidth, int currentHeight) {
