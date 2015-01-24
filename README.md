@@ -46,6 +46,16 @@ Next Step
 ---------
 * Adding some more patterns for more fun with primes.
 
+How to Run
+----------
+You must have Java installed.
+
+1. [Download](https://github.com/hermanzdosilovic/prime-artist/archive/master.zip) or clone project.
+2. If you downloaded project, extract _.zip_ file that you got.
+3. In project directory open `dist` folder.
+4. In `dist` folder run _prime-artist.jar_.
+
+
 License
 -------
 The MIT License (MIT)
